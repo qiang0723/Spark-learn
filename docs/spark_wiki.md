@@ -1,9 +1,9 @@
 ###Environment
 |    HostName   |            IP             | CPU | Mem | Disk | usr/pwd |      OS         |
 | :-----------: |:-------------------------:| :--:| :--:| :---:| :----:| :--------------:|
-|  baas-test(master)    | 9.186.91.104/192.168.5.217  | 4c  | 8g | 50g | crluser/passw0rd| ubuntu16.04 x86 |
-|  baas-test2(slave1)    | 9.186.90.93/192.18.5.34  | 4c  |  8g | 20g | crluser/passw0rd| ubuntu16.04 x86 |
-|  baas-test3(slave2)    | 9.186.90.92/192.168.5.35  | 4c  | 8g | 20g | crluser/passw0rd| ubuntu16.04 x86 |
+|  baas-test(master)    | 192.0.0.1  | 4c  | 8g | 50g | crluser/passw0rd| ubuntu16.04 x86 |
+|  baas-test2(slave1)    | 192.0.0.1  | 4c  |  8g | 20g | crluser/passw0rd| ubuntu16.04 x86 |
+|  baas-test3(slave2)    | 192.0.0.1  | 4c  | 8g | 20g | crluser/passw0rd| ubuntu16.04 x86 |
 
 ### Software
 ```python
@@ -20,9 +20,9 @@ spark:2.1.0
 At each nodes config /etc/hosts
 ```sh
 $ sudo vi /etc/hosts
-192.168.5.217 baas-test
-192.168.5.34 baas-test2
-192.168.5.35 baas-test3
+192.0.0.1 baas-test
+192.0.0.1 baas-test2
+192.0.0.1 baas-test3
 
 ```
 Test if the configuration can be work
@@ -103,7 +103,7 @@ export PATH=$SPARK_HOME/bin:$SPARK_HOME/sbin
  ```sh
  $cp spark-env.sh.template spark-env.sh
  
-SPARK_MASTER_HOST=192.168.5.217
+SPARK_MASTER_HOST=192.0.0.1
 SPARK_WORKER_CORES=3
 SPARK_WORKER_MEMORY=2G
 SPARK_WORKER_INSTANCES=1
@@ -165,15 +165,15 @@ $ jps
 
 * Browse the Spark UI for more information about the cluster resources.details of worker nodes, running application, etc.
 
-	http://9.186.91.104:8080/ 
+	http://192.0.0.1:8080/ 
    
 #### Simple Test 
 
 ```sh
 # Run a Python application on a Spark standalone cluster
 ./bin/run-example SparkPi 10
-./bin/spark-submit  --master spark://9.186.91.104:7077 examples/src/main/python/pi.py 1000
-./bin/spark-submit  --master spark://9.186.91.104:7077 examples/src/main/python/wordcount.py test/filetest.txt
+./bin/spark-submit  --master spark://192.0.0.1:7077 examples/src/main/python/pi.py 1000
+./bin/spark-submit  --master spark://192.0.0.1:7077 examples/src/main/python/wordcount.py test/filetest.txt
 ```
 ### Install Hadoop
 
@@ -218,11 +218,11 @@ export PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin:$HADOOP_HOME/bin:$HADOOP_HOME
 
 ### WEB UI
 
-Spark WebUI  [http://9.186.91.104:8080/](http://9.186.91.104:8080/)
+Spark WebUI  [http://192.0.0.1:8080/](http://192.0.0.1:8080/)
 
-Hadoop WebUI [http://9.186.91.104:8088/cluster/nodes](http://9.186.91.104:8088/cluster/nodes)
+Hadoop WebUI [http://192.0.0.1:8088/cluster/nodes](http://192.0.0.1:8088/cluster/nodes)
 
-HDFS Cluster [http://9.186.91.104:50070/dfshealth.html#tab-overview](http://9.186.91.104:50070/dfshealth.html#tab-overview)
+HDFS Cluster [http://192.0.0.1:50070/dfshealth.html#tab-overview](http://192.0.0.1:50070/dfshealth.html#tab-overview)
 
 ### Scheduling mode: standalone and yarn
 
@@ -292,7 +292,7 @@ more infomation see: hadoop fs -help
 # $ export HADOOP_CONF_DIR=XXX
 $ ./bin/spark-submit \
   --master yarn \
-  #--master  spark://192.168.5.217:7077 \ # choice resource management,spark://host:port(standalone), messos://host:port,yarn or local 
+  #--master  spark://192.0.0.1:7077 \ # choice resource management,spark://host:port(standalone), messos://host:port,yarn or local 
   --deploy-mode cluster \ # can be client
   --class <main-class> \ # for java/scala such as org.apache.spark.examples.SparkPi 
   --name "Example Program" \
@@ -315,6 +315,7 @@ $ ./bin/spark-submit \
   [arguments]
 
 ```
+
 For Python applications, simply pass a .py file in the place of <application-jar> instead of a JAR, and add Python .zip, .egg or .py files to the search path with --py-files.
 
 
@@ -323,7 +324,7 @@ For Python applications, simply pass a .py file in the place of <application-jar
 standalone mode does not support cluster  for python applications
 
 ```pyton
-spark-submit  --master spark://9.186.91.104:7077 examples/src/main/python/wordcount.py test/filetest.txt
+spark-submit  --master spark://192.0.0.1:7077 examples/src/main/python/wordcount.py test/filetest.txt
 ```
 spark-submit examples: http://spark.apache.org/docs/latest/submitting-applications.html,  and run "spark-submit --help" for more information.
 
@@ -335,7 +336,7 @@ Simple test(scala):
 $ ./bin/spark-shell (or path/to/spark-shell)
 $ var textfile=sc.textFile("file:///home/crluser/workspace/spark-2.1.0-bin-hadoop2.7/test/airlines.csv")
 or use file in hdfs
-$ textfile=sc.textFile("hdfs://9.186.91.104:9000/user/crluser/test/filetest.txt")
+$ textfile=sc.textFile("hdfs://192.0.0.1:9000/user/crluser/test/filetest.txt")
 
 $ textfile.count()
 $ textfile.first()
@@ -346,16 +347,16 @@ Simple test(python):
 $ ./bin/pyspark
 $ textfile=sc.textFile("file:///home/crluser/workspace/spark-2.1.0-bin-hadoop2.7/test/airlines.csv")
 or use file in hdfs
-$ textfile=sc.textFile("hdfs://9.186.91.104:9000/user/crluser/test/filetest.txt")
+$ textfile=sc.textFile("hdfs://192.0.0.1:9000/user/crluser/test/filetest.txt")
 
 $ textfile.count()
 $ textfile.first()
 ```
-More infomation in WEB [http://9.186.91.104:4040](http://9.186.91.104:4040/jobs/)
+More infomation in WEB [http://192.0.0.1:4040](http://192.0.0.1:4040/jobs/)
 
 $ spark-shell --master yarn-client --executor-memory 1G --num-executors 10 ((必须是yarn-client 运行在本地(master)) 属于调试)
 
-之后在resourcemanager(http://9.186.91.104:8088)的web 页面上查看 application (hadoop-yarn)
+之后在resourcemanager(http://192.0.0.1:8088)的web 页面上查看 application (hadoop-yarn)
 
 在http:baas-test:4040 会跳转到此job上 查看job信息
 
